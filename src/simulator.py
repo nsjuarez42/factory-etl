@@ -11,6 +11,7 @@ import json
 
 load_dotenv()
 
+
 raw_topic = os.getenv("KAFKA_RAW_TOPIC")
 producer = create_producer()
 

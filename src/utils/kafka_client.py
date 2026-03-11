@@ -1,12 +1,19 @@
 import os
 import json
 from kafka import KafkaConsumer, KafkaProducer
+from dotenv import load_dotenv
+
+load_dotenv() 
 
 KAFKA_BROKERS = os.getenv("KAFKA_BROKERS")
 GROUP_ID = os.getenv("KAFKA_GROUP_ID")
 raw_topic = os.getenv("KAFKA_RAW_TOPIC")
 rich_topic = os.getenv("KAFKA_RICH_TOPIC")
 
+print("KAFKA_BROKERS: {}".format(KAFKA_BROKERS))
+print("GROUP_ID: {}".format(GROUP_ID))
+print("raw_topic: {}".format(raw_topic))
+print("rich_topic: {}".format(rich_topic))
 
 def create_raw_consumer():
     return KafkaConsumer(
