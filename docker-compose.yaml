@@ -7,6 +7,11 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       # --- KRaft mode ---
       KAFKA_NODE_ID: 1
@@ -64,8 +69,32 @@ services:
     environment:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
     depends_on:
-      - elasticsearch
+      - elasticsearch 
 
+  simulator:
+    build: .
+    container_name: simulator
+    env_file: .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    # This overrides the CMD in the Dockerfile
+    command: ["python3", "/app/src/simulator.py"] 
+    depends_on:
+      - kafka 
+  processor: 
+    build: .
+    image: factory-etl 
+    container_name: processor
+    command: ["python3","/app/src/processor.py"]
+    env_file: 
+      - .env 
+    environment: 
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      kafka:
+        condition: service_healthy  
+      elasticsearch:
+        condition: service_started 
 volumes:
   kafka_data:
   es_data:
